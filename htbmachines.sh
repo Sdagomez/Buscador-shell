@@ -26,6 +26,7 @@ function helpPanel(){
   echo -e "\n${yellowColour}[+]${endColour}${grayColour} uso:${endColour}"
   echo -e "\t${purpleColour}u) Actualizar documentos${endColour}"
   echo -e "\t${purpleColour}m) Buscar por nombre de maquina${endColour}"
+  echo -e "\t${purpleColour}i) Buscar por direcciòn IP${endColour}"
   echo -e "\t${purpleColour}h) Mostrar este panel de ayuda${endColour}"
 }
 
@@ -61,6 +62,10 @@ function updateFiles(){
 
 function searchMachine(){
   machineName="$1"
+  verificationMachine="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//')"
+
+if [ "$verificationMachine" ]; then
+
   echo -e "\n${yellowColour}[+]${grayColour} Listando las propiedades de la màquina $machineName$endColour${grayColour}:$endColour\n"
 #  cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//'
   name="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'name' | awk '{start=index($0,$2); print substr($0, start)}')"
@@ -70,6 +75,7 @@ function searchMachine(){
   skills="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'skills' | awk '{start=index($0,$2); print substr($0, start)}')"
   like="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'like' | awk '{start=index($0,$2); print substr($0, start)}')"
   youtube="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'youtube' | awk '{start=index($0,$2); print substr($0, start)}')"
+  activeDirectory="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'activeDirectory' | awk '{start=index($0,$2); print substr($0, start)}')"
 
   echo -e "$yellowColour[+]${redColour} Nombre: $greenColour$name${endColour}"
   echo -e "$yellowColour[+]${redColour} IP: $greenColour$ip${endColour}"
@@ -78,7 +84,16 @@ function searchMachine(){
   echo -e "$yellowColour[+]${redColour} Skills: $greenColour$skills${endColour}"
   echo -e "$yellowColour[+]${redColour} Like: $greenColour$like${endColour}"
   echo -e "$yellowColour[+]${redColour} Link de youtube: $greenColour$youtube${endColour}"
-}
+  
+  if [ "$activeDirectory" == "Active Directory" ]; then
+    echo -e "$yellowColour[+]${redColour} Active Directory: $greenColour Si${endColour}"
+  else
+    echo -e "$yellowColour[+]${redColour} Active Directory: $greenColour No${endColour}"
+  fi
+else
+  echo -e "$yellowColour[+]${redColour} No existe la maquina${endColour}"
+fi
+  }
 
 
 # Indicadores
