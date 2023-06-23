@@ -29,11 +29,6 @@ function helpPanel(){
   echo -e "\t${purpleColour}h) Mostrar este panel de ayuda${endColour}"
 }
 
-function searchMachine(){
-  machineName="$1"
-  echo "$machineName"
-}
-
 function updateFiles(){
 
   if [ ! -f bundle.js ]; then
@@ -63,6 +58,28 @@ function updateFiles(){
     tput cnorm
   fi
 }
+
+function searchMachine(){
+  machineName="$1"
+  echo -e "\n${yellowColour}[+]${grayColour} Listando las propiedades de la màquina $machineName$endColour${grayColour}:$endColour\n"
+#  cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//'
+  name="$(cat bundle.js | awk "/name: \"Aragog\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'name' | awk '{start=index($0,$2); print substr($0, start)}')"
+  ip="$(cat bundle.js | awk "/name: \"Aragog\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'ip' | awk '{start=index($0,$2); print substr($0, start)}')"
+  so="$(cat bundle.js | awk "/name: \"Aragog\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'so' | awk '{start=index($0,$2); print substr($0, start)}')"
+  dificultad="$(cat bundle.js | awk "/name: \"Aragog\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'dificultad' | awk '{start=index($0,$2); print substr($0, start)}')"
+  skills="$(cat bundle.js | awk "/name: \"Aragog\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'skills' | awk '{start=index($0,$2); print substr($0, start)}')"
+  like="$(cat bundle.js | awk "/name: \"Aragog\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'like' | awk '{start=index($0,$2); print substr($0, start)}')"
+  youtube="$(cat bundle.js | awk "/name: \"Aragog\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'youtube' | awk '{start=index($0,$2); print substr($0, start)}')"
+
+  echo -e "$yellowColour[+]${redColour} Nombre: $greenColour$name${endColour}"
+  echo -e "$yellowColour[+]${redColour} IP: $greenColour$ip${endColour}"
+  echo -e "$yellowColour[+]${redColour} SO: $greenColour$so${endColour}"
+  echo -e "$yellowColour[+]${redColour} Dificultad: $greenColour$dificultad${endColour}"
+  echo -e "$yellowColour[+]${redColour} Skills: $greenColour$skills${endColour}"
+  echo -e "$yellowColour[+]${redColour} Like: $greenColour$like${endColour}"
+  echo -e "$yellowColour[+]${redColour} Link de youtube: $greenColour$youtube${endColour}"
+}
+
 
 # Indicadores
 declare -i paremeter_counter=0
