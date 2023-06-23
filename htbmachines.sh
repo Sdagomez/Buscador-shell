@@ -77,32 +77,41 @@ if [ "$verificationMachine" ]; then
   youtube="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'youtube' | awk '{start=index($0,$2); print substr($0, start)}')"
   activeDirectory="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'activeDirectory' | awk '{start=index($0,$2); print substr($0, start)}')"
 
-  echo -e "$yellowColour[+]${redColour} Nombre: $greenColour$name${endColour}"
-  echo -e "$yellowColour[+]${redColour} IP: $greenColour$ip${endColour}"
-  echo -e "$yellowColour[+]${redColour} SO: $greenColour$so${endColour}"
-  echo -e "$yellowColour[+]${redColour} Dificultad: $greenColour$dificultad${endColour}"
-  echo -e "$yellowColour[+]${redColour} Skills: $greenColour$skills${endColour}"
-  echo -e "$yellowColour[+]${redColour} Like: $greenColour$like${endColour}"
-  echo -e "$yellowColour[+]${redColour} Link de youtube: $greenColour$youtube${endColour}"
+  echo -e "$yellowColour[-]${redColour} Nombre: $greenColour$name${endColour}"
+  echo -e "$yellowColour[-]${redColour} IP: $greenColour$ip${endColour}"
+  echo -e "$yellowColour[-]${redColour} SO: $greenColour$so${endColour}"
+  echo -e "$yellowColour[-]${redColour} Dificultad: $greenColour$dificultad${endColour}"
+  echo -e "$yellowColour[-]${redColour} Skills: $greenColour$skills${endColour}"
+  echo -e "$yellowColour[-]${redColour} Like: $greenColour$like${endColour}"
+  echo -e "$yellowColour[-]${redColour} Link de youtube: $greenColour$youtube${endColour}"
   
   if [ "$activeDirectory" == "Active Directory" ]; then
-    echo -e "$yellowColour[+]${redColour} Active Directory: $greenColour Si${endColour}"
+    echo -e "$yellowColour[-]${redColour} Active Directory: $greenColour Si${endColour}"
   else
-    echo -e "$yellowColour[+]${redColour} Active Directory: $greenColour No${endColour}"
+    echo -e "$yellowColour[-]${redColour} Active Directory: $greenColour No${endColour}"
   fi
 else
   echo -e "$yellowColour[+]${redColour} No existe la maquina${endColour}"
 fi
   }
 
+function searchIP(){
+  ipAddress="$1"
+  machineName="$(cat bundle.js | grep "ip: \"$ipAddress\"" -B 3 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',')"
+  echo -e "$yellowColour[+]${grayColour} La maquina correspondiente para la IP ${blueColour} $ipAddress ${grayColour}es ${purpleColour}$machineName${endColour}"
+
+  searchMachine $machineName
+  }
+
 
 # Indicadores
 declare -i paremeter_counter=0
 
-while getopts "m:uh" arg; do 
+while getopts "m:ui:h" arg; do 
   case $arg in
     m) machineName=$OPTARG; let parameter_counter+=1;;
     u) let parameter_counter+=2;;
+    i) ipAddress=$OPTARG; let parameter_counter+=3;;
     h) ;;
   esac
 done
@@ -111,6 +120,8 @@ if [[ $parameter_counter -eq 1 ]]; then
   searchMachine $machineName
 elif [[ $parameter_counter -eq 2 ]]; then
   updateFiles
+elif [[ $parameter_counter -eq 3 ]]; then
+  searchIP $ipAddress
 else
   helpPanel 
 fi
