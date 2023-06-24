@@ -27,6 +27,8 @@ function helpPanel(){
   echo -e "\t${purpleColour}u) Actualizar documentos${endColour}"
   echo -e "\t${purpleColour}m) Buscar por nombre de maquina${endColour}"
   echo -e "\t${purpleColour}i) Buscar por direcciòn IP${endColour}"
+  echo -e "\t${purpleColour}d) Buscar por la dificultad de una maquina${endColour}"
+  echo -e "\t${purpleColour}y) Obtener link de la resoluciòn de la maquina en Youtube${endColour}"
   echo -e "\t${purpleColour}h) Mostrar este panel de ayuda${endColour}"
 }
 
@@ -74,8 +76,8 @@ if [ "$verificationMachine" ]; then
   dificultad="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'dificultad' | awk '{start=index($0,$2); print substr($0, start)}')"
   skills="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'skills' | awk '{start=index($0,$2); print substr($0, start)}')"
   like="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'like' | awk '{start=index($0,$2); print substr($0, start)}')"
-  youtube="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'youtube' | awk '{start=index($0,$2); print substr($0, start)}')"
-  activeDirectory="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'activeDirectory' | awk '{start=index($0,$2); print substr($0, start)}')"
+  youtube="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'youtube' | awk '{start=index($0,$2); print substr($0, start)}'\n)"
+  activeDirectory="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'activeDirectory' | awk '{start=index($0,$2); print substr($0, start)}'\n)"
 
   echo -e "$yellowColour[-]${redColour} Nombre: $greenColour$name${endColour}"
   echo -e "$yellowColour[-]${redColour} IP: $greenColour$ip${endColour}"
@@ -83,35 +85,70 @@ if [ "$verificationMachine" ]; then
   echo -e "$yellowColour[-]${redColour} Dificultad: $greenColour$dificultad${endColour}"
   echo -e "$yellowColour[-]${redColour} Skills: $greenColour$skills${endColour}"
   echo -e "$yellowColour[-]${redColour} Like: $greenColour$like${endColour}"
-  echo -e "$yellowColour[-]${redColour} Link de youtube: $greenColour$youtube${endColour}"
+  echo -e "$yellowColour[-]${redColour} Link de youtube: $greenColour$youtube${endColour}\n"
+  
   
   if [ "$activeDirectory" == "Active Directory" ]; then
-    echo -e "$yellowColour[-]${redColour} Active Directory: $greenColour Si${endColour}"
+    echo -e "$yellowColour[-]${redColour} Active Directory: $greenColour Si${endColour}\n"
   else
-    echo -e "$yellowColour[-]${redColour} Active Directory: $greenColour No${endColour}"
+    echo -e "$yellowColour[-]${redColour} Active Directory: $greenColour No${endColour}\n"
   fi
 else
-  echo -e "$yellowColour[+]${redColour} No existe la maquina${endColour}"
+  echo -e "$redColour[!]${redColour} No existe la maquina${endColour}"
 fi
   }
 
 function searchIP(){
   ipAddress="$1"
+
   machineName="$(cat bundle.js | grep "ip: \"$ipAddress\"" -B 3 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',')"
-  echo -e "$yellowColour[+]${grayColour} La maquina correspondiente para la IP ${blueColour} $ipAddress ${grayColour}es ${purpleColour}$machineName${endColour}"
+  if [ "$machineName" ]; then
+
+  echo -e "$yellowColour[+]${grayColour} La maquina correspondiente para la IP ${blueColour} $ipAddress ${grayColour}es ${purpleColour}$machineName${endColour}\n"
 
   searchMachine $machineName
+  else
+    echo -e "\n$redColour[!]${redColour} No existe la maquina${endColour}\n"
+  fi
   }
+
+function getYoutubeLink(){
+  machineName="$1"
+
+  youtube="$(cat bundle.js | awk "/name: \"$machineName\"/,/resuelta:/" | grep -vE 'id:|sku:|resuelta' | tr -d '"' | tr -d ',' | sed 's/^ *//' | grep 'youtube' | awk '{start=index($0,$2); print substr($0, start)}'\n)"
+  if [ "$youtube" ]; then
+    echo -e "$yellowColour[+]${grayColour} El video de la resoluciòn para la maquina ${blueColour} $machineName ${grayColour}es ${purpleColour}$youtube${endColour}\n"
+  else
+    echo -e "\n$redColour[!]${redColour} No existe la maquina${endColour}\n"
+  fi
+
+}
+
+function getMachineDifficulty(){
+  difficulty="$1"
+  listDiff="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+  if [ "$listDiff" ]; then
+    echo "hola po qui"
+#    echo -e "$yellowColour[+]${grayColour} Las maquinas con la dificultad ${blueColour} $difficulty ${grayColour} son \n ${purpleColour} $listDiff ${endColour}\n"
+    cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column
+  else
+    echo -e "\n$redColour[!]${redColour} No existe la categoria${endColour}\n"
+  fi
+
+
+}
 
 
 # Indicadores
 declare -i paremeter_counter=0
 
-while getopts "m:ui:h" arg; do 
+while getopts "m:ui:y:d:h" arg; do 
   case $arg in
-    m) machineName=$OPTARG; let parameter_counter+=1;;
+    m) machineName="$OPTARG"; let parameter_counter+=1;;
     u) let parameter_counter+=2;;
-    i) ipAddress=$OPTARG; let parameter_counter+=3;;
+    i) ipAddress="$OPTARG"; let parameter_counter+=3;;
+    y) machineName="$OPTARG"; let parameter_counter+=4;;
+    d) difficulty="$OPTARG"; let parameter_counter+=5;;
     h) ;;
   esac
 done
@@ -122,6 +159,10 @@ elif [[ $parameter_counter -eq 2 ]]; then
   updateFiles
 elif [[ $parameter_counter -eq 3 ]]; then
   searchIP $ipAddress
+elif [[ $parameter_counter -eq 4 ]]; then
+  getYoutubeLink $machineName
+elif [[ $parameter_counter -eq 5 ]]; then
+  getMachineDifficulty  $difficulty
 else
   helpPanel 
 fi
