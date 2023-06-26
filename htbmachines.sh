@@ -126,7 +126,7 @@ function getYoutubeLink(){
 
 function getMachineDifficulty(){
   difficulty="$1"
-  listDiff="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+  listDiff="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
   if [ "$listDiff" ]; then
     echo -e "$yellowColour[+]${grayColour} Las maquinas con la dificultad ${blueColour} $difficulty ${grayColour} son \n "
     cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column
@@ -137,7 +137,7 @@ function getMachineDifficulty(){
 
 function getOperativeSys(){
   operativeSys="$1"
-  listOp="$(cat bundle.js | grep "so: \"$operativeSys\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+  listOp="$(cat bundle.js | grep "so: \"$operativeSys\"" -B 5 | grep "name:" | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
   if [ "$listOp" ]; then
     echo -e "$yellowColour[+]${grayColour} Las maquinas con el sistema operativo ${blueColour} $operativeSys ${grayColour} son \n "
     cat bundle.js | grep "so: \"$operativeSys\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column
