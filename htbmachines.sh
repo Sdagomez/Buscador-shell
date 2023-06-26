@@ -28,6 +28,7 @@ function helpPanel(){
   echo -e "\t${purpleColour}m) Buscar por nombre de maquina${endColour}"
   echo -e "\t${purpleColour}i) Buscar por direcciòn IP${endColour}"
   echo -e "\t${purpleColour}d) Buscar por la dificultad de una maquina${endColour}"
+  echo -e "\t${purpleColour}o) Buscar por el sistema operativo${endColour}"
   echo -e "\t${purpleColour}y) Obtener link de la resoluciòn de la maquina en Youtube${endColour}"
   echo -e "\t${purpleColour}h) Mostrar este panel de ayuda${endColour}"
 }
@@ -121,7 +122,6 @@ function getYoutubeLink(){
   else
     echo -e "\n$redColour[!]${redColour} No existe la maquina${endColour}\n"
   fi
-
 }
 
 function getMachineDifficulty(){
@@ -133,21 +133,33 @@ function getMachineDifficulty(){
   else
     echo -e "\n$redColour[!]${redColour} No existe la categoria${endColour}\n"
   fi
+}
 
+function getOperativeSys(){
+  operativeSys="$1"
+  listOp="$(cat bundle.js | grep "so: \"$operativeSys\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+  if [ "$listOp" ]; then
+    echo -e "$yellowColour[+]${grayColour} Las maquinas con el sistema operativo ${blueColour} $operativeSys ${grayColour} son \n "
+    cat bundle.js | grep "so: \"$operativeSys\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column
+  else
+    echo -e "\n$redColour[!]${redColour} No existe la categoria${endColour}\n"
+  fi
 
 }
+
 
 
 # Indicadores
 declare -i paremeter_counter=0
 
-while getopts "m:ui:y:d:h" arg; do 
+while getopts "m:ui:y:d:o:h" arg; do 
   case $arg in
     m) machineName="$OPTARG"; let parameter_counter+=1;;
     u) let parameter_counter+=2;;
     i) ipAddress="$OPTARG"; let parameter_counter+=3;;
     y) machineName="$OPTARG"; let parameter_counter+=4;;
     d) difficulty="$OPTARG"; let parameter_counter+=5;;
+    o) operativeSys="$OPTARG"; let parameter_counter+=6;;
     h) ;;
   esac
 done
@@ -162,6 +174,8 @@ elif [[ $parameter_counter -eq 4 ]]; then
   getYoutubeLink $machineName
 elif [[ $parameter_counter -eq 5 ]]; then
   getMachineDifficulty  $difficulty
+elif [[ $parameter_counter -eq 6 ]]; then
+  getOperativeSys $operativeSys
 else
   helpPanel 
 fi
