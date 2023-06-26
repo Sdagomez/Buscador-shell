@@ -142,7 +142,7 @@ function getOperativeSys(){
     echo -e "$yellowColour[+]${grayColour} Las maquinas con el sistema operativo ${blueColour} $operativeSys ${grayColour} son \n "
     cat bundle.js | grep "so: \"$operativeSys\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column
   else
-    echo -e "\n$redColour[!]${redColour} No existe la categoria${endColour}\n"
+    echo -e "\n$redColour[!]${redColour} No existe ninguna maquina con ese sistema operativo${endColour}\n"
   fi
 
 }
