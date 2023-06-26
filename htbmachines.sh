@@ -144,13 +144,29 @@ function getOperativeSys(){
   else
     echo -e "\n$redColour[!]${redColour} No existe ninguna maquina con ese sistema operativo${endColour}\n"
   fi
-
 }
 
+function getOsDifficultyMachine(){
+  diff="$1"
+  os="$2"
+  echo "hola"
 
+  check_result="$(cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$diff\"" -B 5 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
+  if [ "$check_result" ]; then
+    echo "POR AQUI"
+    echo -e "$yellowColour[+]${grayColour} Las maquinas con el filtro ${grayColour} SO: ${blueColour} $os ${grayColour} Dificultad: ${blueColour} $diff ${grayColour} son \n "
+    cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$diff\"" -B 5 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column
+  else
+    echo -e "\n$redColour[!]${redColour} No existe ninguna maquina con ese sistema operativo${endColour}\n"
+  fi
+}
 
 # Indicadores
 declare -i paremeter_counter=0
+
+#chivatos
+declare -i chivato_difficulty=0
+declare -i chivato_os=0
 
 while getopts "m:ui:y:d:o:h" arg; do 
   case $arg in
@@ -158,8 +174,8 @@ while getopts "m:ui:y:d:o:h" arg; do
     u) let parameter_counter+=2;;
     i) ipAddress="$OPTARG"; let parameter_counter+=3;;
     y) machineName="$OPTARG"; let parameter_counter+=4;;
-    d) difficulty="$OPTARG"; let parameter_counter+=5;;
-    o) operativeSys="$OPTARG"; let parameter_counter+=6;;
+    d) difficulty="$OPTARG"; let chivato_difficulty=1 let parameter_counter+=5;;
+    o) operativeSys="$OPTARG"; let chivato_os=1 let parameter_counter+=6;;
     h) ;;
   esac
 done
@@ -176,6 +192,8 @@ elif [[ $parameter_counter -eq 5 ]]; then
   getMachineDifficulty  $difficulty
 elif [[ $parameter_counter -eq 6 ]]; then
   getOperativeSys $operativeSys
+elif [[ $chivato_difficulty -eq 1 ]] && [[ $chivato_os -eq 1 ]]; then
+  getOsDifficultyMachine $difficulty $operativeSys
 else
   helpPanel 
 fi
