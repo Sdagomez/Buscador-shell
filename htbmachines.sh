@@ -150,11 +150,9 @@ function getOperativeSys(){
 function getOsDifficultyMachine(){
   diff="$1"
   os="$2"
-  echo "hola"
 
   check_result="$(cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$diff\"" -B 5 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
   if [ "$check_result" ]; then
-    echo "POR AQUI"
     echo -e "$yellowColour[+]${grayColour} Las maquinas con el filtro ${grayColour} SO: ${blueColour} $os ${grayColour} Dificultad: ${blueColour} $diff ${grayColour} son \n "
     cat bundle.js | grep "so: \"$os\"" -C 4 | grep "dificultad: \"$diff\"" -B 5 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column
   else
@@ -164,7 +162,6 @@ function getOsDifficultyMachine(){
 
 function getSkill(){
   skill="$1"
-  echo $skill
 
   check_skill="$(cat bundle.js | grep "skills: " -B 6 | grep "$skill" -i -B 6 | grep "name: " | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
   if [ "$check_skill" ]; then 
