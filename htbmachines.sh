@@ -128,8 +128,7 @@ function getMachineDifficulty(){
   difficulty="$1"
   listDiff="$(cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column)"
   if [ "$listDiff" ]; then
-    echo "hola po qui"
-#    echo -e "$yellowColour[+]${grayColour} Las maquinas con la dificultad ${blueColour} $difficulty ${grayColour} son \n ${purpleColour} $listDiff ${endColour}\n"
+    echo -e "$yellowColour[+]${grayColour} Las maquinas con la dificultad ${blueColour} $difficulty ${grayColour} son \n "
     cat bundle.js | grep "dificultad: \"$difficulty\"" -B 5 | grep name | awk 'NF{print $NF}' | tr -d '"' | tr -d ',' | column
   else
     echo -e "\n$redColour[!]${redColour} No existe la categoria${endColour}\n"
